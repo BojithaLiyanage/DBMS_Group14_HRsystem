@@ -149,6 +149,7 @@ export function CreateEmployeeByDepartmentReport() {
               id="department"
               value={formValues.department}
               onChange={handleDepartmentChange}
+              // placeholder="Select"
               required
             >
               <option disabled selected value="" required>
