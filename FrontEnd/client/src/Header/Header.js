@@ -25,10 +25,10 @@ function Header() {
     <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
       <Container>
         <img
-          alt=""
+          alt="alt text"
           src="favicon.ico"
-          width="30"
-          height="30"
+          width="60"
+          height="60"
           className="d-inline-block align-top"
         />
         <h4 className="txt1">Jupyter Apperals</h4>
