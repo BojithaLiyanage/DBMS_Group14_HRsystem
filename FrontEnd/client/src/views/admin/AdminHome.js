@@ -41,7 +41,7 @@ class AdminHome extends Component {
                 <button className="but1">Add New HR Manager</button>
               </Link>
               <br />
-              <Link to="/register" className="mb-3">
+              {/* <Link to="/register" className="mb-3">
                 <button className="but1">Register New Employee</button>
               </Link>
               <br />
@@ -52,7 +52,7 @@ class AdminHome extends Component {
               <Link to="/hr/view_employees" className="mb-3">
                 <button className="but1">Employee List</button>
               </Link>
-              <br />
+              <br /> */}
             </div>
           </div>
         </div>

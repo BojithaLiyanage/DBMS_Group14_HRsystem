@@ -29,9 +29,9 @@ function Header() {
           src="favicon.ico"
           width="60"
           height="60"
-          className="d-inline-block align-top"
+          className="d-inline-block pl-2"
         />
-        <h4 className="txt1">Jupyter Apperals</h4>
+        <h4 className="txt1 pt-2">Jupyter Apperals</h4>
 
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">

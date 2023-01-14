@@ -98,7 +98,7 @@ export function Login() {
         <div className="row">
           <center>
             <div className="login">
-              <h3> Welcome to Jupyter Apperals </h3>
+              <h3 className="welcometxt"> Welcome to Jupyter Apperals </h3>
               <Form onSubmit={handleSubmit}>
                 <Label className="logindet">Username</Label>
                 <Input

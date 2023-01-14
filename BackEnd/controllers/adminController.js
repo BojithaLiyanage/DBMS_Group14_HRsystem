@@ -1,6 +1,10 @@
 const con = require("../database/db_helper");
 const auth = require("../middleware/auth");
 const enc = require("../middleware/encryptionHandler");
+const users = require("../database/users");
+const getData = require("../database/getData");
+const validator = require("../validation/validation");
+const setData = require("../database/setData");
 
 const postAdminLogin = async (req, res) => {
   console.log(req.body);
@@ -51,142 +55,211 @@ const postAdminLogin = async (req, res) => {
   });
 };
 
-const postAddHRM = async (req, res) => {
-  let data = req.body;
-  console.log("*************************", data);
-  let username = data.username;
+// const postAddHRM = async (req, res) => {
+//   let data = req.body;
+//   console.log("*************************", data);
+//   let username = data.username;
 
-  if (data.password1 !== data.password2) {
-    console.log("Passwords do not match");
+//   if (data.password1 !== data.password2) {
+//     console.log("Passwords do not match");
+//     return res.status(400).json({
+//       message: "Passwords do not match",
+//     });
+//   }
+//   let hashed_password = await enc.encryptCredential(data.password1);
+//   // console.log("!!!!!!!!!!!!!!!!!!!!!!");
+//   let sql1 = `SELECT count(employee.ID) as count FROM employee left outer join user on employee.user_Id = user.ID WHERE email = ${con.escape(
+//     data.email
+//   )} or employee.nic_number = ${con.escape(
+//     data.nic_number
+//   )} or user.username = ${con.escape(username)}`;
+//   con.query(sql1, (err, result) => {
+//     if (err) {
+//       console.log(err);
+//       return res.status(400).json({
+//         message: err.sqlMessage,
+//       });
+//     } else if (result[0].count > 0) {
+//       return res.status(400).json({
+//         message: "Email, username or NIC already exists!",
+//       });
+//     }
+//     // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+//     let address_sql =
+//       "insert into Address (Line1, Line2, City, District, Postal_Code) values (?);";
+//     let address_values = [
+//       data.Line1,
+//       data.Line2,
+//       data.City,
+//       data.District,
+//       data.Postal_Code,
+//     ];
+
+//     let user_sql = "insert into User (username, password) values (?);";
+//     let user_values = [username, hashed_password];
+
+//     let emerg_sql =
+//       "insert into EmergencyContact (name, phone_number, Relationship) values (?); ";
+//     let emerge_values = [data.Name, data.phone_number, data.Relationship];
+
+//     let sql2 = address_sql + user_sql + emerg_sql;
+//     let values = [address_values, user_values, emerge_values];
+
+//     con.query(address_sql, [address_values], (err, result) => {
+//       if (err) {
+//         console.log(err);
+//         return res.status(400).json({
+//           message: err.sqlMessage,
+//         });
+//       } else {
+//         con.query(user_sql, [user_values], (err, result) => {
+//           if (err) {
+//             console.log(err);
+//             return res.status(400).json({
+//               message: err.sqlMessage,
+//             });
+//           } else {
+//             con.query(emerg_sql, [emerge_values], (err, result) => {
+//               if (err) {
+//                 console.log(err);
+//                 return res.status(400).json({
+//                   message: err.sqlMessage,
+//                 });
+//               } else {
+//                 let address_id = result[0].insertId;
+//                 let user_id = result[1].insertId;
+//                 let emerge_id = result[2].insertId;
+
+//                 let emp_sql =
+//                   "insert into Employee (firstname, lastname, birthday, email, salary, Joined_date, nic_number, department, maritalStatus, address, type, paygrade, empStatus, user_id, emergency_contact) values (?)";
+//                 let emp_values = [
+//                   data.firstname,
+//                   data.lastname,
+//                   data.birthday,
+//                   data.email,
+//                   data.salary,
+//                   data.Joined_date,
+//                   data.nic_number,
+//                   data.department,
+//                   data.maritalStatus,
+//                   address_id,
+//                   2,
+//                   4,
+//                   data.empStatus,
+//                   user_id,
+//                   emerge_id,
+//                 ];
+
+//                 con.query(emp_sql, [emp_values], (err, result) => {
+//                   if (err) {
+//                     console.log(err);
+//                     return res.status(400).json({
+//                       message: err.sqlMessage,
+//                     });
+//                   } else {
+//                     let emp_id = result.insertId;
+
+//                     let phone_sql =
+//                       "insert into PhoneNumber (emp_ID, phone_number) values ?";
+//                     let phone_values = [];
+
+//                     phone_values.push([emp_id, req.body.phonenumber1]);
+//                     phone_values.push([emp_id, req.body.phonenumber2]);
+
+//                     // console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+//                     con.query(phone_sql, [phone_values], (err, result) => {
+//                       if (err) {
+//                         console.log(err);
+//                         return res.status(400).json({
+//                           message: err.sqlMessage,
+//                         });
+//                       } else {
+//                         console.log(result);
+//                         return res.status(200).json({
+//                           result: result,
+//                           message: "HR added successfully",
+//                         });
+//                       }
+//                     });
+//                   }
+//                 });
+//               }
+//             });
+//           }
+//         });
+//       }
+//     });
+//   });
+// };
+
+const postAddHRM = async (req, res) => {
+  const validation_result = validator.employee_signup(req);
+
+  if (validation_result.status) {
     return res.status(400).json({
-      message: "Passwords do not match",
+      message: validation_result.message,
     });
   }
-  let hashed_password = await enc.encryptCredential(data.password1);
-  // console.log("!!!!!!!!!!!!!!!!!!!!!!");
-  let sql1 = `SELECT count(employee.ID) as count FROM employee left outer join user on employee.user_Id = user.ID WHERE email = ${con.escape(
-    data.email
-  )} or employee.nic_number = ${con.escape(
-    data.nic_number
-  )} or user.username = ${con.escape(username)}`;
-  con.query(sql1, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: err.sqlMessage,
-      });
-    } else if (result[0].count > 0) {
-      return res.status(400).json({
-        message: "Email, username or NIC already exists!",
-      });
-    }
-    // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-    let address_sql =
-      "insert into Address (Line1, Line2, City, District, Postal_Code) values (?);";
-    let address_values = [
-      data.Line1,
-      data.Line2,
-      data.City,
-      data.District,
-      data.Postal_Code,
-    ];
 
-    let user_sql = "insert into User (username, password) values (?);";
-    let user_values = [username, hashed_password];
-
-    let emerg_sql =
-      "insert into EmergencyContact (name, phone_number, Relationship) values (?); ";
-    let emerge_values = [data.Name, data.phone_number, data.Relationship];
-
-    let sql2 = address_sql + user_sql + emerg_sql;
-    let values = [address_values, user_values, emerge_values];
-
-    con.query(address_sql, [address_values], (err, result) => {
-      if (err) {
-        console.log(err);
-        return res.status(400).json({
-          message: err.sqlMessage,
-        });
-      } else {
-        con.query(user_sql, [user_values], (err, result) => {
-          if (err) {
-            console.log(err);
-            return res.status(400).json({
-              message: err.sqlMessage,
-            });
-          } else {
-            con.query(emerg_sql, [emerge_values], (err, result) => {
-              if (err) {
-                console.log(err);
-                return res.status(400).json({
-                  message: err.sqlMessage,
-                });
-              } else {
-                let address_id = result[0].insertId;
-                let user_id = result[1].insertId;
-                let emerge_id = result[2].insertId;
-
-                let emp_sql =
-                  "insert into Employee (firstname, lastname, birthday, email, salary, Joined_date, nic_number, department, maritalStatus, address, type, paygrade, empStatus, user_id, emergency_contact) values (?)";
-                let emp_values = [
-                  data.firstname,
-                  data.lastname,
-                  data.birthday,
-                  data.email,
-                  data.salary,
-                  data.Joined_date,
-                  data.nic_number,
-                  data.department,
-                  data.maritalStatus,
-                  address_id,
-                  2,
-                  4,
-                  data.empStatus,
-                  user_id,
-                  emerge_id,
-                ];
-
-                con.query(emp_sql, [emp_values], (err, result) => {
-                  if (err) {
-                    console.log(err);
-                    return res.status(400).json({
-                      message: err.sqlMessage,
-                    });
-                  } else {
-                    let emp_id = result.insertId;
-
-                    let phone_sql =
-                      "insert into PhoneNumber (emp_ID, phone_number) values ?";
-                    let phone_values = [];
-
-                    phone_values.push([emp_id, req.body.phonenumber1]);
-                    phone_values.push([emp_id, req.body.phonenumber2]);
-
-                    // console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-
-                    con.query(phone_sql, [phone_values], (err, result) => {
-                      if (err) {
-                        console.log(err);
-                        return res.status(400).json({
-                          message: err.sqlMessage,
-                        });
-                      } else {
-                        console.log(result);
-                        return res.status(200).json({
-                          result: result,
-                          message: "HR added successfully",
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
+  existingUsers = await users.getUserByUsername(req.body.username);
+  if (existingUsers.values.length >= 1) {
+    return res.status(400).json({
+      message: "Username already exists",
     });
-  });
+  }
+
+  department = await getData.getDepartmentById(req.body.department);
+  if (department.values.length < 1) {
+    return res.status(400).json({
+      message: "Department does not exists",
+    });
+  }
+
+  emptype = await getData.getEmpTypeById(req.body.type);
+  if (emptype.values.length < 1) {
+    return res.status(400).json({
+      message: "Employee Type does not exists",
+    });
+  } else if (
+    // emptype.values[0].type == "HR Manager" ||
+    emptype.values[0].type == "Admin"
+  ) {
+    return res.status(400).json({
+      message: "Invalid employee type",
+    });
+  }
+
+  maritalstatus = await getData.getMaritalStatusById(req.body.maritalStatus);
+  if (maritalstatus.values.length < 1) {
+    return res.status(400).json({
+      message: "Invalid marital status",
+    });
+  }
+
+  if (emptype.values[0].type == "Manager") {
+    req.body.paygrade = 3;
+  } else {
+    req.body.paygrade = 1;
+  }
+
+  empstatus = await getData.getEmpStatusById(req.body.empStatus);
+  if (empstatus.values.length < 1) {
+    return res.status(400).json({
+      message: "Invalid employee status",
+    });
+  }
+
+  const regitrationStatus = await users.registerUser(req);
+  if (regitrationStatus.status === true) {
+    return res.status(201).json({
+      message: "Successfully Added a HR Manager",
+    });
+  } else {
+    return res.status(400).json({
+      message: "User registration failed",
+    });
+  }
 };
 
 const getHRM = async (req, res) => {

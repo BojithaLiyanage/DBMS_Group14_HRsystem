@@ -367,17 +367,16 @@ function RegisterHR() {
         <br />
         <div className="row">
           <div className="form-group mb-3 col-6">
-            <label className="label">Department</label>
+            <label className="label">Department (HR Dep - 1)</label>
             <br />
             <select
               className="select-box"
               name="department"
               id="department"
-              value={formValues.department}
               onChange={handleChange}
             >
               <option>Select</option>
-              <option>HR</option>
+              <option>1</option>
             </select>
           </div>
 
@@ -403,7 +402,7 @@ function RegisterHR() {
 
         <div className="row">
           <div className="form-group mb-3 col-6">
-            <label className="label">Employee Type </label>
+            <label className="label">Employee Type (HR Manager - 2)</label>
             <br />
             <select
               className="select-box"
@@ -413,7 +412,7 @@ function RegisterHR() {
               onChange={handleChange}
             >
               <option>Select</option>
-              <option>HR Manager</option>
+              <option>2</option>
             </select>
           </div>
 
@@ -599,7 +598,7 @@ function RegisterHR() {
 
         <div className="form-group">
           <center>
-            <button type="submit" className="but2">
+            <button type="submit" className="but2" onClick={handleSubmit}>
               Register
             </button>
           </center>

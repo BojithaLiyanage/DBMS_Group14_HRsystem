@@ -8,11 +8,11 @@ const router = express.Router();
 router.post("/", adminController.postAdminLogin);
 
 // HR manager add post - postAddHRM
-router.post("/addHR", auth.requireAuth, adminController.postAddHRM);
+router.post("/addHR", adminController.postAddHRM);
 
 // get HR manager details
-router.get("/getHRM", auth.requireAuth, adminController.getHRM);
+router.get("/getHRM", adminController.getHRM);
 
-router.get("/getDetails", auth.requireAuth, adminController.getDetails);
+router.get("/getDetails", adminController.getDetails);
 
 module.exports = router;

@@ -52,6 +52,11 @@ class EmployeeHome extends Component {
             </div>
           </div>
           <h1 className="cardtitle4">My Leave Details</h1>
+          <center>
+            <label className="fonts">
+              Available Leave Count :<lable className="det">22</lable>
+            </label>
+          </center>
           <EmployeeHomeTable />
         </div>
         <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
